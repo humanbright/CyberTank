@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import traceback
 from typing import Dict, Union
+import base64
 
 # from imageHandler import convertImage64, convertImageNp
 
@@ -31,13 +32,17 @@ class ConnectionManager:
         print("Client Disconnected")
 
     async def send_personal_message(self, data: dict, websocket: WebSocket):
-        if websocket in self.active_connections:
+        try:
             await websocket.send_json(data)
+        except WebSocketDisconnect:
+            self.disconnect(websocket)
+            print(f"Client disconnected while sending personal message.")
 
-    async def broadcast_data_dict(self, message: dict):
-        for connection in self.active_connections.keys():
-            await connection.send_json(message)
-
+    async def broadcast_data_dict(self, message: dict, sender: WebSocket):
+        for connection in list(self.active_connections.keys()):
+            if connection != sender:  # Check if the connection is not the sender
+                await connection.send_json(message)
+        
 
 manager = ConnectionManager()
 
@@ -81,7 +86,9 @@ async def websocket_endpoint(websocket: WebSocket):
                     case "movement":
                         print(data['positions'])
                     case "video":
-                        await manager.broadcast_data_dict(data)
+                        # Pass `websocket` as the second argument to exclude the sender from the broadcast
+                        await manager.broadcast_data_dict(data, websocket)
+
             except Exception as e:
                 print(f"Error: {e}")
                 traceback.print_exc()
