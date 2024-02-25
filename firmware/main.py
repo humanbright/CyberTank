@@ -66,11 +66,19 @@ async def receive_events(websocket, connection_state):
             data = json.loads(message)
             print("Received event:", data)
             if 'positions' in data:
-                positions = data['positions']
-                print(positions)
-                print(type(positions))
-                # Assuming positions is a dictionary with x and y keys
-                set_rover_movement(positions[0], positions[1])
+                if data['type'] == 'movement':
+                    positions = data['positions']
+                    print(positions)
+                    print(type(positions))
+                    # Assuming positions is a dictionary with x and y keys
+                    set_rover_movement(positions[0], positions[1])
+                else:
+                    # Do turrent movement here
+                    left= True if data['positions'][1] > 0 else False
+                    if left:
+                        servo.turnLeft()
+                    else:
+                        servo.turnRight()
     except websockets.exceptions.ConnectionClosed:
         print("Connection closed by server.")
     finally:
