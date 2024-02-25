@@ -76,13 +76,13 @@ async def websocket_endpoint(websocket: WebSocket, client_id: Union[str, None] =
             try:
                 match event:
                     # send image to unity
-                    case "convert_send_image":
+                    case "send_converted_image":
                         convertedImage = data["image"]
                         await manager.send_personal_message(
                             {"event": "received_image", "image": convertedImage}, websocket
                         )
                     # send unity inputs to rover
-                    case "convert_unity_inputs":
+                    case "send_unity_inputs":
                         convertedInputs = data["inputs"]
                         await manager.send_personal_message(
                             {"event": "received_input", "inputs" : convertedInputs}, websocket

@@ -15,9 +15,9 @@ def convertImage64(image_numpy):
 
 
 # DEBUG
+def debug():
+    original_path = "fork.png"
+    convertNumpy = convertImageNp(original_path)
+    image64 = convertImage64(convertNumpy)
 
-original_path = "fork.png"
-convertNumpy = convertImageNp(original_path)
-image64 = convertImage64(convertNumpy)
-
-print("Base64 String:", image64)
+    print("Base64 String:", image64)
