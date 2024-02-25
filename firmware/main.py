@@ -94,29 +94,34 @@ async def receive_events(websocket, connection_state):
         connection_state["is_open"] = False
 
 async def rover_client(uri):
-    cam = cv2.VideoCapture(0)
-    if not cam.isOpened():
-        print("Cannot open camera")
-        return
-    
-    connection_state = {"is_open": True}
-
-    try:
-        async with websockets.connect(uri) as websocket:
-            # Create a task for send_frames
-            send_frames_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
-            # Create a task for receive_events
-            receive_events_task = asyncio.create_task(receive_events(websocket, connection_state))
+    while(True):
+        try:
+            cam = cv2.VideoCapture(0)
+            if not cam.isOpened():
+                print("Cannot open camera")
+                return
             
-            # Wait for tasks to complete
-            await asyncio.gather(send_frames_task, receive_events_task)
-                
+            connection_state = {"is_open": True}
 
-    except Exception as e:
-        print(f"WebSocket Error: {e}")
-    finally:
-        cam.release()
-        cv2.destroyAllWindows()
+            try:
+                async with websockets.connect(uri) as websocket:
+                    # Create a task for send_frames
+                    send_frames_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
+                    # Create a task for receive_events
+                    receive_events_task = asyncio.create_task(receive_events(websocket, connection_state))
+                    
+                    # Wait for tasks to complete
+                    await asyncio.gather(send_frames_task, receive_events_task)
+                        
+
+            except Exception as e:
+                print(f"WebSocket Error: {e}")
+            finally:
+                cam.release()
+                cv2.destroyAllWindows()
+        except Exception as e:
+            pass
+        
 
 uri = "wss://713745338d17.ngrok.app/ws"
 # uri = "ws://127.0.0.1:8000/ws"
