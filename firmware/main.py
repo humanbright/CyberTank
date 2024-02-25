@@ -62,24 +62,24 @@ async def rover_client(uri):
             receive_task = asyncio.create_task(receive_events(websocket, connection_state))
             results = await asyncio.gather(*[send_task, receive_task])
             positions = results[1]["positions"]
-            threshold = 0.5
+            dead_zone = 0.1
             x = positions[0]
             y = positions[1]
-            if y > threshold:
-                print("FORWARD")
-                Forward()
-            elif x > threshold:
-                print("RIGHT")
-                Right()
-            elif y < -threshold:
-                print("BACK")
-                Back()
-            elif x < -threshold:
-                print("LEFT")
-                Left()
-            else:
-                # print("STOP")
+            # Check if the joystick is in the dead zone (center position)
+            if abs(x) < dead_zone and abs(y) < dead_zone:
                 Stop()
+                return
+
+            # Determine the primary direction of the joystick
+            if y > dead_zone:
+                Forward()
+            elif y < -dead_zone:
+                Back()
+
+            if x > dead_zone:
+                Right()
+            elif x < -dead_zone:
+                Left()
     except Exception as e:
         print(f"WebSocket Error: {e}")
     finally:
