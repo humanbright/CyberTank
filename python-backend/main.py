@@ -68,21 +68,10 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
+            # print(data)
             event = data["type"]
             try:
                 match event:
-                    # send image to unity
-                    case "send_converted_image":
-                        convertedImage = data["image"]
-                        await manager.send_personal_message(
-                            {"event": "received_image", "image": convertedImage}, websocket
-                        )
-                    # send unity inputs to rover
-                    case "send_unity_inputs":
-                        convertedInputs = data["inputs"]
-                        await manager.send_personal_message(
-                            {"event": "received_input", "inputs" : convertedInputs}, websocket
-                        )
                     case "movement":
                         await manager.broadcast_data_dict(data, websocket)
                     case "turrent":
