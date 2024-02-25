@@ -77,7 +77,7 @@ async def rover_client(uri):
             elif x < -threshold:
                 print("LEFT")
                 Left()
-            elif abs(x) <= threshold and abs(y) <= threshold:
+            else:
                 print("STOP")
                 Stop()
     except Exception as e:
