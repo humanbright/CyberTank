@@ -27,7 +27,7 @@ async def send_frames(websocket, cam, connection_state):
 
         try:
             await websocket.send(json.dumps({"type": "video", "data": jpg_as_text}))
-            print("sent " + str(fcount))
+            # print("sent " + str(fcount))
         except websockets.exceptions.ConnectionClosed:
             print("Connection closed, stopping send_frames task.")
             break
@@ -78,7 +78,7 @@ async def rover_client(uri):
                 print("LEFT")
                 Left()
             else:
-                print("STOP")
+                # print("STOP")
                 Stop()
     except Exception as e:
         print(f"WebSocket Error: {e}")
