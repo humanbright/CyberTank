@@ -43,7 +43,7 @@ async def send_frames(websocket, cam, connection_state):
             print("Failed to capture image")
             break
         # rotate
-        image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+        image = cv2.rotate(image, cv2.ROTATE_180_CLOCKWISE)
         # Compress the image to JPEG to reduce size
         _, buffer = cv2.imencode('.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 50])
         jpg_as_text = base64.b64encode(buffer).decode('utf-8')
