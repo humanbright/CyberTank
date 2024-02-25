@@ -6,11 +6,11 @@ import numpy as np
 import base64
 
 # drivers
-from Motor import *
+from Motor import Motor
 from Servo import Servo
 
 servo = Servo()
-
+PWM = Motor()
 
 async def send_frames(websocket, cam, connection_state):
     fcount = 0  # Initialize frame count
@@ -62,29 +62,10 @@ async def rover_client(uri):
             receive_task = asyncio.create_task(receive_events(websocket, connection_state))
             results = await asyncio.gather(*[send_task, receive_task])
             positions = results[1]["positions"]
-            dead_zone = 0.1
-            x = positions[0]
-            y = positions[1]
-            # Check if the joystick is in the dead zone (center position)
-            if abs(x) < dead_zone and abs(y) < dead_zone:
-                print("Stop")
-                Stop()
-                return
+            print(positions)
+            print(type(positions))
+            set_rover_movement(positions[0], positions[1])
 
-            # Determine the primary direction of the joystick
-            if y > dead_zone:
-                print("Forward")
-                Forward()
-            elif y < -dead_zone:
-                print("Back")
-                Back()
-
-            if x > dead_zone:
-                print("RIGHT")
-                Right()
-            elif x < -dead_zone:
-                print("Left")
-                Left()
     except Exception as e:
         print(f"WebSocket Error: {e}")
     finally:
@@ -94,3 +75,33 @@ async def rover_client(uri):
 uri = "wss://713745338d17.ngrok.app/ws"
 # uri = "ws://127.0.0.1:8000/ws"
 asyncio.run(rover_client(uri))
+
+def set_rover_movement(x, y):
+    """
+    Sets the motor model for the rover based on x and y joystick inputs.
+
+    :param x: The x-coordinate of the joystick, ranging from -1 to 1.
+    :param y: The y-coordinate of the joystick, ranging from -1 to 1.
+    """
+
+    # Define the maximum speed for forward and backward movement
+    max_speed = 2000
+    # Define the speed for turning
+    turn_speed = 500
+
+    # Interpolate the y input for forward/backward speed
+    forward_back_speed = int(y * max_speed)
+    
+    # Interpolate the x input for turning speed
+    turn_value = int(x * turn_speed)
+
+    # Calculate the motor speeds
+    left_motor_speed = forward_back_speed - turn_value
+    right_motor_speed = forward_back_speed + turn_value
+
+    # Ensure the motor speeds are within the valid range
+    left_motor_speed = max(min(left_motor_speed, max_speed), -max_speed)
+    right_motor_speed = max(min(right_motor_speed, max_speed), -max_speed)
+
+    # Set the motor model values
+    PWM.setMotorModel(left_motor_speed, left_motor_speed, right_motor_speed, right_motor_speed)

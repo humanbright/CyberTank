@@ -106,23 +106,23 @@ class Motor:
             angle -= 5
 
 
-PWM = Motor()
+# PWM = Motor()
 
     
-def Forward():
-    PWM.setMotorModel(2000, 2000, 2000, 2000)
+# def Forward():
+#     PWM.setMotorModel(2000, 2000, 2000, 2000)
 
-def Back():
-    PWM.setMotorModel(-2000, -2000, -2000, -2000)
+# def Back():
+#     PWM.setMotorModel(-2000, -2000, -2000, -2000)
     
-def Left():
-    PWM.setMotorModel(-500, -500, 2000, 2000)  # Left
+# def Left():
+#     PWM.setMotorModel(-500, -500, 2000, 2000)  # Left
 
-def Right():
-    PWM.setMotorModel(2000, 2000, -500, -500)
+# def Right():
+#     PWM.setMotorModel(2000, 2000, -500, -500)
 
-def Stop():
-    PWM.setMotorModel(0, 0, 0, 0)
+# def Stop():
+#     PWM.setMotorModel(0, 0, 0, 0)
 
 
 
