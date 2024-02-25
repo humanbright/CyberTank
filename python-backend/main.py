@@ -84,7 +84,9 @@ async def websocket_endpoint(websocket: WebSocket):
                             {"event": "received_input", "inputs" : convertedInputs}, websocket
                         )
                     case "movement":
-                        print(data['positions'])
+                        await manager.broadcast_data_dict(data, websocket)
+                    case "turrent":
+                        await manager.broadcast_data_dict(data, websocket)
                     case "video":
                         # Pass `websocket` as the second argument to exclude the sender from the broadcast
                         await manager.broadcast_data_dict(data, websocket)
