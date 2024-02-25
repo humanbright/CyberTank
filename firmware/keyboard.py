@@ -22,9 +22,9 @@ def keyboardLoop():
             Right()
             print("RIGHT")
         elif key == "q":
-            servo.lookLeft()
+            # servo.lookLeft()
         elif key == "e":
-            servo.lookRight()
+            # servo.lookRight()
         elif key == "1":
             servo.lookUp()
         elif key == "2":
