@@ -60,7 +60,7 @@ async def rover_client(uri):
         async with websockets.connect(uri) as websocket:
             send_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
             receive_task = asyncio.create_task(receive_events(websocket, connection_state))
-            results = await asyncio.gather(send_task, receive_task)
+            results = await asyncio.gather(*[send_task, receive_task])
             positions = results[1]["positions"]
             threshold = 0.5
             x = positions[0]
