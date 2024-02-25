@@ -34,9 +34,9 @@ class ConnectionManager:
         if websocket in self.active_connections:
             await websocket.send_json(data)
 
-    async def broadcast(self, message: str):
+    async def broadcast_data_dict(self, message: dict):
         for connection in self.active_connections.keys():
-            await connection.send_text(message)
+            await connection.send_json(message)
 
 
 manager = ConnectionManager()
@@ -80,6 +80,8 @@ async def websocket_endpoint(websocket: WebSocket):
                         )
                     case "movement":
                         print(data['positions'])
+                    case "video":
+                        await manager.broadcast_data_dict(data)
             except Exception as e:
                 print(f"Error: {e}")
                 traceback.print_exc()
