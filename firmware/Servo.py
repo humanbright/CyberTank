@@ -19,22 +19,22 @@ class Servo:
 
     def setServoPwm(self, channel, angle, error=10):
         angle = int(angle)
-        if channel == '0':
-            self.PwmServo.setServoPulse(8, 500 + int((angle + error) / 0.09))
-        elif channel == '1':
-            self.PwmServo.setServoPulse(9, 500 + int((angle + error) / 0.09))
-        elif channel == '2':
-            self.PwmServo.setServoPulse(10, 500 + int((angle + error) / 0.09))
-        elif channel == '3':
-            self.PwmServo.setServoPulse(11, 500 + int((angle + error) / 0.09))
-        elif channel == '4':
-            self.PwmServo.setServoPulse(12, 500 + int((angle + error) / 0.09))
-        elif channel == '5':
-            self.PwmServo.setServoPulse(13, 500 + int((angle + error) / 0.09))
-        elif channel == '6':
-            self.PwmServo.setServoPulse(14, 500 + int((angle + error) / 0.09))
-        elif channel == '7':
-            self.PwmServo.setServoPulse(15, 500 + int((angle + error) / 0.09))
+        # Calculate pulse width based on angle and error
+        pulse_width = 500 + int((angle + error) / 0.09)
+        # Map channel string to actual channel number
+        channel_map = {
+            '0': 8,
+            '1': 9,
+            '2': 10,
+            '3': 11,
+            '4': 12,
+            '5': 13,
+            '6': 14,
+            '7': 15
+        }
+        # Set the servo pulse for the corresponding channel
+        if channel in channel_map:
+            self.PwmServo.setServoPulse(channel_map[channel], pulse_width)
 
     def lookUp(self):
         if (self.upAngle >= 180):
