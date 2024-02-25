@@ -59,6 +59,6 @@ async def rover_client(uri):
         cam.release()
         cv2.destroyAllWindows()
 
-# uri = "wss://713745338d17.ngrok.app/ws"
-uri = "ws://127.0.0.1:8000/ws"
+uri = "wss://713745338d17.ngrok.app/ws"
+# uri = "ws://127.0.0.1:8000/ws"
 asyncio.run(rover_client(uri))
