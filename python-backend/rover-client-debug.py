@@ -25,8 +25,9 @@ async def send_frames(websocket, cam, connection_state):
             print("Connection closed, stopping send_frames task.")
             break
 
-        if cv2.waitKey(1) == ord('q'):  # Break the loop if 'q' is pressed
-            break
+        await asyncio.sleep(0.01)
+        # if cv2.waitKey(1) == ord('q'):  # Break the loop if 'q' is pressed
+        #     break
         
         fcount += 1
 
