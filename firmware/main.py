@@ -76,9 +76,9 @@ async def receive_events(websocket, connection_state):
                     # Do turrent movement here
                     left= True if data['positions'][1] > 0 else False
                     if left:
-                        servo.turnLeft()
+                        servo.lookLeft()
                     else:
-                        servo.turnRight()
+                        servo.lookRight()
     except websockets.exceptions.ConnectionClosed:
         print("Connection closed by server.")
     finally:
