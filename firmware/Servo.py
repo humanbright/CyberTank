@@ -49,15 +49,27 @@ class Servo:
         self.setServoPwm("1", self.upAngle)
 
     def lookRight(self):
-        if (self.sideAngle >= 180):
+        if self.sideAngle >= 180:
             return
-        self.sideAngle += self.turnSpeed
+        
+        # Dynamically adjust turn speed based on proximity to target angle
+        target_angle = 90  # Assuming 90 is the target for demonstration
+        distance_to_target = abs(target_angle - self.sideAngle)
+        adjusted_speed = max(1, min(self.turnSpeed, distance_to_target / 10))  # Adjust this formula as needed
+        
+        self.sideAngle += adjusted_speed
         self.setServoPwm("0", self.sideAngle)
 
     def lookLeft(self):
-        if (self.sideAngle <= 0):
+        if self.sideAngle <= 0:
             return
-        self.sideAngle -= self.turnSpeed
+        
+        # Dynamically adjust turn speed based on proximity to target angle
+        target_angle = -90  # Assuming -90 is the target for demonstration, indicating left
+        distance_to_target = abs(target_angle - self.sideAngle)
+        adjusted_speed = max(1, min(self.turnSpeed, distance_to_target / 10))  # Adjust this formula as needed
+        
+        self.sideAngle -= adjusted_speed  # Decrease to look left
         self.setServoPwm("0", self.sideAngle)
 
 
