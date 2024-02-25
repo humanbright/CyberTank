@@ -24,7 +24,7 @@ def set_rover_movement(x, y):
 
     # Define the maximum speed for forward and backward movement
     max_speed = 2000
-    # Define the speed for turning
+    # Define the speed for turning (this may be lower than max_speed)
     turn_speed = 500
 
     # Interpolate the y input for forward/backward speed
@@ -33,9 +33,17 @@ def set_rover_movement(x, y):
     # Interpolate the x input for turning speed
     turn_value = int(x * turn_speed)
 
-    # Calculate the motor speeds
-    left_motor_speed = forward_back_speed - turn_value
-    right_motor_speed = forward_back_speed + turn_value
+    # Calculate the motor speeds for forward/backward and turning
+    # For turning, we only need to set the speed of the wheels on one side of the rover
+    if x > 0:  # Turning right
+        left_motor_speed = forward_back_speed
+        right_motor_speed = -turn_value  # Reverse the direction for the right side
+    elif x < 0:  # Turning left
+        left_motor_speed = -turn_value  # Reverse the direction for the left side
+        right_motor_speed = forward_back_speed
+    else:  # No turning, only forward/backward
+        left_motor_speed = forward_back_speed
+        right_motor_speed = forward_back_speed
 
     # Ensure the motor speeds are within the valid range
     left_motor_speed = max(min(left_motor_speed, max_speed), -max_speed)
