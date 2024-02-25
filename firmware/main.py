@@ -94,7 +94,6 @@ async def receive_events(websocket, connection_state):
         connection_state["is_open"] = False
 
 async def rover_client(uri):
-    await asyncio.sleep(10)
     while(True):
         try:
             cam = cv2.VideoCapture(0)
