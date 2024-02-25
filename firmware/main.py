@@ -32,7 +32,7 @@ def set_rover_movement(x, y):
     w, x_motor, y_motor, z = map(lambda speed: max(min(speed, 2000), -2000), [w, x_motor, y_motor, z])
 
     # Set the motor model values
-    PWM.setMotorModel(w, x_motor, y_motor, z)
+    PWM.setMotorModel(int(w), int(x_motor), int(y_motor), int(z))
 
 async def send_frames(websocket, cam, connection_state):
     fcount = 0  # Initialize frame count
