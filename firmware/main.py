@@ -12,6 +12,8 @@ from Servo import Servo
 servo = Servo()
 PWM = Motor()
 
+PWM.setMotorModel(0, 0, 0, 0)
+
 def set_rover_movement(x, y):
     """
     Sets the motor model for the rover based on x and y joystick inputs.
