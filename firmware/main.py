@@ -43,6 +43,12 @@ async def receive_events(websocket, connection_state):
         async for message in websocket:
             data = json.loads(message)
             print("Received event:", data)
+            if 'positions' in data:
+                positions = data['positions']
+                print(positions)
+                print(type(positions))
+                # Assuming positions is a dictionary with x and y keys
+                set_rover_movement(positions['x'], positions['y'])
     except websockets.exceptions.ConnectionClosed:
         print("Connection closed by server.")
     finally:
@@ -58,13 +64,14 @@ async def rover_client(uri):
 
     try:
         async with websockets.connect(uri) as websocket:
-            send_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
-            receive_task = asyncio.create_task(receive_events(websocket, connection_state))
-            results = await asyncio.gather(*[send_task, receive_task])
-            positions = results[1]["positions"]
-            print(positions)
-            print(type(positions))
-            set_rover_movement(positions[0], positions[1])
+            # Create a task for send_frames
+            send_frames_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
+            # Create a task for receive_events
+            receive_events_task = asyncio.create_task(receive_events(websocket, connection_state))
+            
+            # Wait for tasks to complete
+            await asyncio.gather(send_frames_task, receive_events_task)
+                
 
     except Exception as e:
         print(f"WebSocket Error: {e}")
