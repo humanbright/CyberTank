@@ -10,19 +10,13 @@ def keyboardLoop():
         key = input("Control the rover: ")
         key = key.lower()
         if key == "q":
-            # left
-            servo.moveToAngle("0", 150)
+            servo.lookLeft()
         elif key == "e":
-            # right
-            servo.moveToAngle("0", 30)
+            servo.lookRight()
         elif key == "1":
-            # up
-            servo.moveToAngle("1", servo.upAngle + servo.turnSpeed)
+            servo.lookUp()
         elif key == "2":
-            # down
-            servo.moveToAngle("1", servo.upAngle - servo.turnSpeed)
-        elif key == "0":
-            servo.moveToAngle("0", 0)
+            servo.lookDown()
 
 
 if __name__ == '__main__':
