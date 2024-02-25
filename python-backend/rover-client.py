@@ -2,39 +2,55 @@ import asyncio
 import websockets
 import json
 import cv2
-from imageHandler import convertImage64
+import numpy as np
+import base64
 
 async def rover_client():
-    client_id = "rover_client"
-    uri = "ws://localhost:8000/ws?client_id={client_id}"
+    uri = "wss://713745338d17.ngrok.app/ws"
     
-    # open camera
-    cam = cv2.VideoCapture(0) 
+    # Open camera
+    cam = cv2.VideoCapture(0)
+    if not cam.isOpened():
+        print("Cannot open camera")
+        return
     
-    # on connect with the websocket
-    async with websockets.connect(uri) as websocket:
-        while True:
-            # frame count to send over
-            fcount = 0
-            
-            # get image from camera
-            result, image = cam.read()
-            
-            # if frame count is multiple of that value send it over
-            if (fcount % 1000000 == 0):
-                # convert image to base 64
-                convertedImage = convertImage64(image)
-                await websocket.send(json.dumps({"event": "send_converted_image", "image": convertedImage}))
-                   
-            # Listen for commands from the server
-            response = await websocket.recv()
-            data = json.loads(response)
-            event = data.get("event")
-            
-            # handles event where we need to transfer inputs to the rover
-            if event == "received_input":
-                # handle input / send to dylan to do
-                print("inputs", data["inputs"])
+    try:
+        async with websockets.connect(uri) as websocket:
+            fcount = 0  # Initialize frame count
+            while True:
+                # Get image from camera
+                result, image = cam.read()
+                if not result:
+                    print("Failed to capture image")
+                    break
+                
+                # Resize the image to reduce size
+                scale_percent = 50  # percent of original size
+                width = int(image.shape[1] * scale_percent / 100)
+                height = int(image.shape[0] * scale_percent / 100)
+                dim = (width, height)
+                resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+                
+                # Compress the image to JPEG to reduce size
+                _, buffer = cv2.imencode('.jpg', resized)
+                jpg_as_text = base64.b64encode(buffer).decode('utf-8')
+                
+                # Throttle the frame sending rate (e.g., every 30 frames)
+                # if fcount % 2 == 0:
+                cv2.imshow("frame", image)
+                await websocket.send(json.dumps({"type": "video", "data": jpg_as_text}))
+                
+                print("sent " + str(fcount))
+                if cv2.waitKey(1) == ord('q'):  # Break the loop if 'q' is pressed
+                    break
+                
+                fcount += 1  # Increment frame count
+                
+    except Exception as e:
+        print(f"WebSocket Error: {e}")
+    finally:
+        cam.release()
+        cv2.destroyAllWindows()
 
-# run the client
+# Run the client
 asyncio.run(rover_client())
