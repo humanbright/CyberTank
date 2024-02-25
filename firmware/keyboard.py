@@ -9,28 +9,20 @@ def keyboardLoop():
     while True:
         key = input("Control the rover: ")
         key = key.lower()
-        if key == "w":
-            Forward()
-            print("UP")
-        elif key == "s":
-            print("DOWN")
-            Back()
-        elif key == "a":
-            print("LEFT")
-            Left()
-        elif key == "d":
-            Right()
-            print("RIGHT")
-        elif key == "q":
-            servo.lookLeft()
+        if key == "q":
+            # left
+            servo.moveToAngle("0", 150)
         elif key == "e":
-            servo.lookRight()
+            # right
+            servo.moveToAngle("0", 30)
         elif key == "1":
-            servo.lookUp()
+            # up
+            servo.moveToAngle("1", servo.upAngle + servo.turnSpeed)
         elif key == "2":
-            servo.lookDown()
-        else:
-            Stop()
+            # down
+            servo.moveToAngle("1", servo.upAngle - servo.turnSpeed)
+        elif key == "0":
+            servo.moveToAngle("0", 0)
 
 
 if __name__ == '__main__':

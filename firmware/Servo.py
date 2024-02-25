@@ -19,48 +19,39 @@ class Servo:
 
     def setServoPwm(self, channel, angle, error=10):
         angle = int(angle)
-        # Calculate pulse width based on angle and error
-        pulse_width = 500 + int((angle + error) / 0.09)
-        # Map channel string to actual channel number
-        channel_map = {
-            '0': 8,
-            '1': 9,
-            '2': 10,
-            '3': 11,
-            '4': 12,
-            '5': 13,
-            '6': 14,
-            '7': 15
-        }
-        # Set the servo pulse for the corresponding channel
-        if channel in channel_map:
-            self.PwmServo.setServoPulse(channel_map[channel], pulse_width)
+        if channel == '0':
+            self.PwmServo.setServoPulse(8, 500 + int((angle + error) / 0.09))
+        elif channel == '1':
+            self.PwmServo.setServoPulse(9, 500 + int((angle + error) / 0.09))
+        elif channel == '2':
+            self.PwmServo.setServoPulse(10, 500 + int((angle + error) / 0.09))
+        elif channel == '3':
+            self.PwmServo.setServoPulse(11, 500 + int((angle + error) / 0.09))
+        elif channel == '4':
+            self.PwmServo.setServoPulse(12, 500 + int((angle + error) / 0.09))
+        elif channel == '5':
+            self.PwmServo.setServoPulse(13, 500 + int((angle + error) / 0.09))
+        elif channel == '6':
+            self.PwmServo.setServoPulse(14, 500 + int((angle + error) / 0.09))
+        elif channel == '7':
+            self.PwmServo.setServoPulse(15, 500 + int((angle + error) / 0.09))
 
-    def lookUp(self):
-        if (self.upAngle >= 180):
-            return
-        self.upAngle += self.turnSpeed
-        self.setServoPwm("1", self.upAngle)
+    def moveToAngle(self, channel, target_angle):
+        current_angle = self.sideAngle if channel == '0' else self.upAngle
+        step = self.turnSpeed if current_angle < target_angle else -self.turnSpeed
 
-    def lookDown(self):
-        if (self.upAngle <= 0):
-            return
-        self.upAngle -= self.turnSpeed
-        self.setServoPwm("1", self.upAngle)
+        while current_angle != target_angle:
+            current_angle += step
+            if (step > 0 and current_angle > target_angle) or (step < 0 and current_angle < target_angle):
+                current_angle = target_angle  # Prevent overshooting
+            self.setServoPwm(channel, current_angle)
+            time.sleep(0.1)  # Delay between increments to slow down the movement
 
-    def lookRight(self):
-        if (self.sideAngle >= 180):
-            return
-        # self.sideAngle += self.turnSpeed
-        # self.setServoPwm("0", self.sideAngle)
-        self.setServoPwm("0", 150)
-
-    def lookLeft(self):
-        if (self.sideAngle <= 0):
-            return
-        # self.sideAngle -= self.turnSpeed
-        # self.setServoPwm("0", self.sideAngle)
-        self.setServoPwm("0", 30)
+        # Update the stored angle
+        if channel == '0':
+            self.sideAngle = current_angle
+        elif channel == '1':
+            self.upAngle = current_angle
 
 
 # Main program logic follows:
