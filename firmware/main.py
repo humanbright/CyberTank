@@ -60,7 +60,8 @@ async def rover_client(uri):
         async with websockets.connect(uri) as websocket:
             send_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
             receive_task = asyncio.create_task(receive_events(websocket, connection_state))
-            positions = receive_task["positions"]
+            results = await asyncio.gather(send_task, receive_task)
+            positions = results[1]["positions"]
             threshold = 0.5
             x = positions[0]
             y = positions[1]
@@ -79,7 +80,6 @@ async def rover_client(uri):
             elif abs(x) <= threshold and abs(y) <= threshold:
                 print("STOP")
                 Stop()
-            await asyncio.gather(send_task, receive_task)
     except Exception as e:
         print(f"WebSocket Error: {e}")
     finally:
