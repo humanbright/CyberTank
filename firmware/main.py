@@ -78,7 +78,7 @@ async def receive_events(websocket, connection_state):
                 print(positions)
                 print(type(positions))
                 # Assuming positions is a dictionary with x and y keys
-                set_rover_movement(positions['x'], positions['y'])
+                set_rover_movement(positions[0], positions[1])
     except websockets.exceptions.ConnectionClosed:
         print("Connection closed by server.")
     finally:
