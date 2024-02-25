@@ -22,35 +22,17 @@ def set_rover_movement(x, y):
     :param y: The y-coordinate of the joystick, ranging from -1 to 1.
     """
 
-    # Define the maximum speed for forward and backward movement
-    max_speed = 2000
-    # Define the speed for turning (this may be lower than max_speed)
-    turn_speed = 500
-
-    # Interpolate the y input for forward/backward speed
-    forward_back_speed = int(y * max_speed)
+    # Calculate motor speeds based on x and y inputs
+    w = 2000 * (x + y)
+    x_motor = 2000 * (x + y)
+    y_motor = 2000 * (-x + y)
+    z = 2000 * (-x + y)
     
-    # Interpolate the x input for turning speed
-    turn_value = int(x * turn_speed)
-
-    # Calculate the motor speeds for forward/backward and turning
-    # For turning, we only need to set the speed of the wheels on one side of the rover
-    if x > 0:  # Turning right
-        left_motor_speed = forward_back_speed
-        right_motor_speed = -turn_value  # Reverse the direction for the right side
-    elif x < 0:  # Turning left
-        left_motor_speed = -turn_value  # Reverse the direction for the left side
-        right_motor_speed = forward_back_speed
-    else:  # No turning, only forward/backward
-        left_motor_speed = forward_back_speed
-        right_motor_speed = forward_back_speed
-
-    # Ensure the motor speeds are within the valid range
-    left_motor_speed = max(min(left_motor_speed, max_speed), -max_speed)
-    right_motor_speed = max(min(right_motor_speed, max_speed), -max_speed)
+    # Ensure motor speeds are within the -2000 to 2000 range
+    w, x_motor, y_motor, z = map(lambda speed: max(min(speed, 2000), -2000), [w, x_motor, y_motor, z])
 
     # Set the motor model values
-    PWM.setMotorModel(left_motor_speed, left_motor_speed, right_motor_speed, right_motor_speed)
+    PWM.setMotorModel(w, x_motor, y_motor, z)
 
 async def send_frames(websocket, cam, connection_state):
     fcount = 0  # Initialize frame count
