@@ -20,7 +20,7 @@ class Servo:
     def setServoPwm(self, channel, angle, error=10):
         angle = int(angle)
         if channel == '0':
-            self.PwmServo.setServoPulse(8, 500 + int((angle + error) / 0.09))
+            self.PwmServo.setServoPulse(8, 2500 - int((angle + error) / 0.09))
         elif channel == '1':
             self.PwmServo.setServoPulse(9, 500 + int((angle + error) / 0.09))
         elif channel == '2':
@@ -36,22 +36,29 @@ class Servo:
         elif channel == '7':
             self.PwmServo.setServoPulse(15, 500 + int((angle + error) / 0.09))
 
-    def moveToAngle(self, channel, target_angle):
-        current_angle = self.sideAngle if channel == '0' else self.upAngle
-        step = self.turnSpeed if current_angle < target_angle else -self.turnSpeed
+    def lookUp(self):
+        if (self.upAngle >= 180):
+            return
+        self.upAngle += self.turnSpeed
+        self.setServoPwm("1", self.upAngle)
 
-        while current_angle != target_angle:
-            current_angle += step
-            if (step > 0 and current_angle > target_angle) or (step < 0 and current_angle < target_angle):
-                current_angle = target_angle  # Prevent overshooting
-            self.setServoPwm(channel, current_angle)
-            time.sleep(0.1)  # Delay between increments to slow down the movement
+    def lookDown(self):
+        if (self.upAngle <= 0):
+            return
+        self.upAngle -= self.turnSpeed
+        self.setServoPwm("1", self.upAngle)
 
-        # Update the stored angle
-        if channel == '0':
-            self.sideAngle = current_angle
-        elif channel == '1':
-            self.upAngle = current_angle
+    def lookRight(self):
+        if (self.sideAngle >= 180):
+            return
+        self.sideAngle += self.turnSpeed
+        self.setServoPwm("0", self.sideAngle)
+
+    def lookLeft(self):
+        if (self.sideAngle <= 0):
+            return
+        self.sideAngle -= self.turnSpeed
+        self.setServoPwm("0", self.sideAngle)
 
 
 # Main program logic follows:
