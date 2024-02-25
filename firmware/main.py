@@ -67,18 +67,23 @@ async def rover_client(uri):
             y = positions[1]
             # Check if the joystick is in the dead zone (center position)
             if abs(x) < dead_zone and abs(y) < dead_zone:
+                print("Stop")
                 Stop()
                 return
 
             # Determine the primary direction of the joystick
             if y > dead_zone:
+                print("Forward")
                 Forward()
             elif y < -dead_zone:
+                print("Back")
                 Back()
 
             if x > dead_zone:
+                print("RIGHT")
                 Right()
             elif x < -dead_zone:
+                print("Left")
                 Left()
     except Exception as e:
         print(f"WebSocket Error: {e}")
