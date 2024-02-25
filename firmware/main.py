@@ -36,12 +36,30 @@ async def send_frames(websocket, cam, connection_state):
             break
         
         fcount += 1
+        await asyncio.sleep(1/30)
 
 async def receive_events(websocket, connection_state):
     try:
         async for message in websocket:
             data = json.loads(message)
             print("Received event:", data)
+    except websockets.exceptions.ConnectionClosed:
+        print("Connection closed by server.")
+    finally:
+        connection_state["is_open"] = False
+
+async def rover_client(uri):
+    cam = cv2.VideoCapture(0)
+    if not cam.isOpened():
+        print("Cannot open camera")
+        return
+    
+    connection_state = {"is_open": True}
+
+    try:
+        async with websockets.connect(uri) as websocket:
+            send_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
+            receive_task = asyncio.create_task(receive_events(websocket, connection_state))
             positions = data["positions"]
             threshold = 0.5
             x = positions[0]
@@ -61,23 +79,6 @@ async def receive_events(websocket, connection_state):
             elif abs(x) <= threshold and abs(y) <= threshold:
                 print("STOP")
                 Stop()
-    except websockets.exceptions.ConnectionClosed:
-        print("Connection closed by server.")
-    finally:
-        connection_state["is_open"] = False
-
-async def rover_client(uri):
-    cam = cv2.VideoCapture(0)
-    if not cam.isOpened():
-        print("Cannot open camera")
-        return
-    
-    connection_state = {"is_open": True}
-
-    try:
-        async with websockets.connect(uri) as websocket:
-            send_task = asyncio.create_task(send_frames(websocket, cam, connection_state))
-            receive_task = asyncio.create_task(receive_events(websocket, connection_state))
             await asyncio.gather(send_task, receive_task)
     except Exception as e:
         print(f"WebSocket Error: {e}")
